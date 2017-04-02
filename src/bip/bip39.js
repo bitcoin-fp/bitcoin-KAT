@@ -1,4 +1,5 @@
 var sha256 = require('../crypto').sha256
+var pbkdf2 = require('../crypto').pbkdf2
 var bytesToBits = require('../utils').bytesToBits
 var R = require('ramda')
 // var curry = require('ramda').curry
@@ -34,14 +35,33 @@ var wordsMapping = (pieces) => pieces.map(engWords)
 var mnemonicWords = R.compose(R.join(' '), wordsMapping, R.match(/(.{1,11})/g))
 
 /* Returns mnemonic
+ * @param {Buffer} entropy - Random number source, length 128, 160, 192, 224 or 256 bits
  */
 var mnemonic = (entropy) => R.compose(mnemonicWords, entropyCheck(entropy), checksum)(entropy)
 
 /* Returns HD wallet seed
+ * @param {Buffer} entropy - Random number source, length 128, 160, 192, 224 or 256 bits
+ * @param {String} salt - The salt for pbkdf2
+ * @returns {Buffer} - seed, length 512 bits
  */
-var seed = (entropy) => R.compose(mnemonicWords, entropyCheck(entropy), checksum)(entropy)
+var seed = (entropy, salt) => {
+  var s = salt ? 'mnemonic' + salt : 'mnemonic'
+  var m = R.compose(mnemonicWords, entropyCheck(entropy), checksum)(entropy)
+  return pbkdf2(m, s)
+}
+
+/* Returns HD wallet seed from mnemonic
+ * @param {String} mnemonic - The mnemonic words
+ * @param {String} salt - The salt for pbkdf2
+ * @returns {Buffer} - seed, length 512 bits
+ */
+var seedByMnemonic = (mnemonic, salt) => {
+  var s = salt ? 'mnemonic' + salt : 'mnemonic'
+  return pbkdf2(mnemonic, s)
+}
 
 module.exports = {
   mnemonic: mnemonic,
-  seed: seed
+  seed: seed,
+  seedByMnemonic: seedByMnemonic
 }
