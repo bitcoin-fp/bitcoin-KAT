@@ -35,34 +35,35 @@ var wordListMapping = (wordList) => (pieces) => pieces.map((binary) => wordList[
 var mnemonicWords = (entropy, wordMapping) => R.compose(R.join(' '), wordMapping, R.match(/(.{1,11})/g), entropyCheck(entropy), checksum)
 
 /* Returns mnemonic words
- * @param {Buffer} entropy - Random number source, length 128, 160, 192, 224 or 256 bits
+ * @param {Hex} entropy - Random number source, length 128, 160, 192, 224 or 256 bits
  * @param {String} language - language of word list
  * @returns {String} - The mnemonic words
  */
 var mnemonic = (entropy, language) => {
+  var bEntropy = Buffer.from(entropy, 'hex')
   var engWordMapping = wordListMapping(enWords)
-  return mnemonicWords(entropy, engWordMapping)(entropy)
+  return mnemonicWords(bEntropy, engWordMapping)(bEntropy)
 }
 
 /* Returns HD wallet seed
- * @param {Buffer} entropy - Random number source, length 128, 160, 192, 224 or 256 bits
+ * @param {Hex} entropy - Random number source, length 128, 160, 192, 224 or 256 bits
  * @param {String} salt - The salt for pbkdf2
- * @returns {Buffer} - seed, length 512 bits
+ * @returns {Hex} - seed, length 512 bits
  */
 var seed = (entropy, salt) => {
   var s = salt ? 'mnemonic' + salt : 'mnemonic'
   var m = mnemonic(entropy)
-  return pbkdf2(m, s)
+  return pbkdf2(m, s).toString('hex')
 }
 
 /* Returns HD wallet seed from mnemonic
  * @param {String} mnemonic - The mnemonic words
  * @param {String} salt - The salt for pbkdf2
- * @returns {Buffer} - seed, length 512 bits
+ * @returns {Hex} - seed, length 512 bits
  */
 var seedByMnemonic = (mnemonic, salt) => {
   var s = salt ? 'mnemonic' + salt : 'mnemonic'
-  return pbkdf2(mnemonic, s)
+  return pbkdf2(mnemonic, s).toString('hex')
 }
 
 module.exports = {
