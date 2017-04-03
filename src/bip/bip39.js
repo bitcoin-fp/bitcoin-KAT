@@ -26,12 +26,24 @@ var checksum = R.compose(bytesToBits, sha256)
  */
 var entropyCheck = R.curry((entropy, checksum) => bytesToBits(entropy) + checksum.substring(0, entropy.length * 8 / 32))
 
+/* Returns wordlist
+ * @param {JSON Object} wordList - The JSON mapping content of BIP39 word list
+ * @param {String} binary - The binary index of word
+ * @returns {String} - The word
+ */
 var words = R.curry((wordList, binary) => wordList[parseInt(binary, 2)])
 
+// set English word list
 var engWords = words(enWords)
 
+/* Binary and words mapping
+ * @param {String} pieces - The array of 11-bit binary piece
+ * @returns {Array} - The array of words
+ */
 var wordsMapping = (pieces) => pieces.map(engWords)
 
+/* Compose functions of join(), wordsMapping, and match()
+ */
 var mnemonicWords = R.compose(R.join(' '), wordsMapping, R.match(/(.{1,11})/g))
 
 /* Returns mnemonic
