@@ -2,9 +2,6 @@ var sha256 = require('../crypto').sha256
 var pbkdf2 = require('../crypto').pbkdf2
 var bytesToBits = require('../utils').bytesToBits
 var R = require('ramda')
-// var curry = require('ramda').curry
-// var compose = require('ramda').compose
-// var match = require('ramda').match
 
 var enWords = require('./english.json')
 
@@ -24,32 +21,28 @@ var checksum = R.compose(bytesToBits, sha256)
  * @param {String} checksum - Checksum of entropy in bits
  * @returns {String} - Entropy + Checksum in bits
  */
-var entropyCheck = R.curry((entropy, checksum) => bytesToBits(entropy) + checksum.substring(0, entropy.length * 8 / 32))
+var entropyCheck = (entropy) => (checksum) => bytesToBits(entropy) + checksum.substring(0, entropy.length * 8 / 32)
 
-/* Returns wordlist
+/* Returns array of mnemonic words
  * @param {JSON Object} wordList - The JSON mapping content of BIP39 word list
- * @param {String} binary - The binary index of word
- * @returns {String} - The word
+ * @param {String} pieces - The array of binary index of words
+ * @returns {Array} - The array of mnemonic words
  */
-var words = R.curry((wordList, binary) => wordList[parseInt(binary, 2)])
+var wordListMapping = (wordList) => (pieces) => pieces.map((binary) => wordList[parseInt(binary, 2)])
 
-// set English word list
-var engWords = words(enWords)
-
-/* Binary and words mapping
- * @param {String} pieces - The array of 11-bit binary piece
- * @returns {Array} - The array of words
+/* Compose functions to generate Mnemonic words
  */
-var wordsMapping = (pieces) => pieces.map(engWords)
+var mnemonicWords = (entropy, wordMapping) => R.compose(R.join(' '), wordMapping, R.match(/(.{1,11})/g), entropyCheck(entropy), checksum)
 
-/* Compose functions of join(), wordsMapping, and match()
- */
-var mnemonicWords = R.compose(R.join(' '), wordsMapping, R.match(/(.{1,11})/g))
-
-/* Returns mnemonic
+/* Returns mnemonic words
  * @param {Buffer} entropy - Random number source, length 128, 160, 192, 224 or 256 bits
+ * @param {String} language - language of word list
+ * @returns {String} - The mnemonic words
  */
-var mnemonic = (entropy) => R.compose(mnemonicWords, entropyCheck(entropy), checksum)(entropy)
+var mnemonic = (entropy, language) => {
+  var engWordMapping = wordListMapping(enWords)
+  return mnemonicWords(entropy, engWordMapping)(entropy)
+}
 
 /* Returns HD wallet seed
  * @param {Buffer} entropy - Random number source, length 128, 160, 192, 224 or 256 bits
@@ -58,7 +51,7 @@ var mnemonic = (entropy) => R.compose(mnemonicWords, entropyCheck(entropy), chec
  */
 var seed = (entropy, salt) => {
   var s = salt ? 'mnemonic' + salt : 'mnemonic'
-  var m = R.compose(mnemonicWords, entropyCheck(entropy), checksum)(entropy)
+  var m = mnemonic(entropy)
   return pbkdf2(m, s)
 }
 
