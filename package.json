@@ -27,6 +27,7 @@
     "standard": "^9.0.2"
   },
   "dependencies": {
+    "bs58": "^4.0.0",
     "ramda": "^0.23.0",
     "ripemd160": "^2.0.1"
   }
