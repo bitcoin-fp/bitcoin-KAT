@@ -3,10 +3,7 @@ var utils = require('./utils')
 var VERSION = require('./const').VERSION
 var R = require('ramda')
 
-var address = (publicKey) => {
-  var payload = R.compose(utils.prefixBy(VERSION.ADDRESS), crypto.dhash, utils.bufferify)(publicKey)
-  return crypto.base58Check(payload)
-}
+var address = R.compose(crypto.base58Check, utils.prefixBy(VERSION.ADDRESS), crypto.dhash, utils.bufferify)
 
 module.exports = {
   address: address

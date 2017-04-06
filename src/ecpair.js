@@ -20,37 +20,21 @@ var compress = (isCompressed) => (ecpoints) => ecpoints.getEncoded(isCompressed)
  * @param {boolean} isCompressed - Compressed or uncompressed
  * @param {Hex} payload - The random number
  */
-var publicKey = (isCompressed) => (payload) => R.compose(R.toUpper, compress(isCompressed), ecpoints, utils.bigify)(payload)
+var publicKey = (isCompressed) => R.compose(R.toUpper, compress(isCompressed), ecpoints, utils.bigify)
 
 /* Returns compressed or uncompressed WIF
  * @param {boolean} isCompressed - Compressed or uncompressed
  * @param {Hex} privateKey - The EC private key
  */
-var wifPayload = (isCompressed) => (privateKey) => {
-  var payload = isCompressed
-    ? R.compose(utils.suffixBy([0x01]), utils.prefixBy(VERSION.WIF), utils.bufferify)(privateKey)
-    : R.compose(utils.prefixBy(VERSION.WIF), utils.bufferify)(privateKey)
-  var wif = crypto.base58Check(payload)
-  return wif
-}
-
-/* Returns WIF and public key
- * @param {Hex} privateKey - The private key
- */
-var ecpair = (privateKey) => {
-  var wif = wifPayload(false)
-  var wifCompressed = wifPayload(true)
-  var pubCompressed = publicKey(true)
-  var pubUncompressed = publicKey(false)
-  return {
-    privateKey: privateKey,
-    WIF: wif(privateKey),
-    compressedWIF: wifCompressed(privateKey),
-    compressedPublicKey: pubCompressed(privateKey),
-    uncompressedPublicKey: pubUncompressed(privateKey)
-  }
+var wif = (isCompressed) => {
+  return isCompressed
+    ? R.compose(crypto.base58Check, utils.prefixBy(VERSION.WIF), utils.suffixBy([0x01]), utils.bufferify)
+    : R.compose(crypto.base58Check, utils.prefixBy(VERSION.WIF), utils.bufferify)
 }
 
 module.exports = {
-  ecpair: ecpair
+  wif: wif(false),
+  compressedWIF: wif(true),
+  compressedPublicKey: publicKey(true),
+  uncompressedPublicKey: publicKey(false)
 }
