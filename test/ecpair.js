@@ -7,13 +7,13 @@ describe('Keys', function () {
   var privateKey = '1E99423A4ED27608A15A2616A2B0E9E52CED330AC530EDCC32C8FFC6A526AEDD'
   var keyPair = ecpair(privateKey)
 
-  // it('should be valid uncompressed public key', function () {
-  //   assert.strictEqual(keyPair.uncompressedPublicKey, '04F028892BAD7ED57D2FB57BF33081D5CFCF6F9ED3D3D7F159C2E2FFF579DC341A07CF33DA18BD734C600B96A72BBC4749D5141C90EC8AC328AE52DDFE2E505BDB')
-  // })
+  it('should be valid uncompressed public key', function () {
+    assert.strictEqual(keyPair.uncompressedPublicKey, '04F028892BAD7ED57D2FB57BF33081D5CFCF6F9ED3D3D7F159C2E2FFF579DC341A07CF33DA18BD734C600B96A72BBC4749D5141C90EC8AC328AE52DDFE2E505BDB')
+  })
 
-  // it('should be valid compressed public key', function () {
-  //   assert.strictEqual(keyPair.compressedPublicKey, '03F028892BAD7ED57D2FB57BF33081D5CFCF6F9ED3D3D7F159C2E2FFF579DC341A')
-  // })
+  it('should be valid compressed public key', function () {
+    assert.strictEqual(keyPair.compressedPublicKey, '03F028892BAD7ED57D2FB57BF33081D5CFCF6F9ED3D3D7F159C2E2FFF579DC341A')
+  })
 
   it('should be valid WIF private key', function () {
     assert.strictEqual(keyPair.WIF, '5J3mBbAH58CpQ3Y5RNJpUKPE62SQ5tfcvU2JpbnkeyhfsYB1Jcn')

@@ -1,3 +1,5 @@
+var bigi = require('bigi')
+
 var bytesToBits = function (bytes) {
   var bits = Array.prototype.slice.call(bytes).map(function (byte) {
     var bits = byte.toString(2)
@@ -37,11 +39,14 @@ var suffixTo = (to) => (what) => {
 
 var slice = (start, end) => (buf) => buf.slice(start, end)
 
+var bigify = (payload) => bigi.fromBuffer(Buffer.from(payload, 'hex'))
+
 module.exports = {
   bytesToBits: bytesToBits,
   prefixBy: prefixBy,
   prefixTo: prefixTo,
   suffixBy: suffixBy,
   suffixTo: suffixTo,
-  slice: slice
+  slice: slice,
+  bigify: bigify
 }
