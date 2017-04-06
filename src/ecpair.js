@@ -2,7 +2,6 @@ var crypto = require('./crypto')
 var R = require('ramda')
 var utils = require('./utils')
 var VERSION = require('./const').VERSION
-var base58 = require('bs58')
 var ecurve = require('ecurve')
 var ecurveSecp256k1 = ecurve.getCurveByName('secp256k1')
 
@@ -13,6 +12,7 @@ var ecpoints = (payload) => ecurveSecp256k1.G.multiply(payload)
 
 /* Returns compressed or uncompressed EC points
  * @param {boolean} isCompressed - Compressed or uncompressed
+ * @param {object} ecpoints - The EC points from ecpoints()
  */
 var compress = (isCompressed) => (ecpoints) => ecpoints.getEncoded(isCompressed).toString('hex')
 
@@ -24,22 +24,18 @@ var publicKey = (isCompressed) => (payload) => R.compose(R.toUpper, compress(isC
 
 /* Returns compressed or uncompressed WIF
  * @param {boolean} isCompressed - Compressed or uncompressed
- * @param {Hex} payload - The EC private key
+ * @param {Hex} privateKey - The EC private key
  */
-var wifPayload = (isCompressed) => (payload) => {
-  var fixify = isCompressed
-    ? R.compose(utils.suffixBy([0x01]), utils.prefixBy(VERSION.WIF), utils.bufferify)
-    : R.compose(utils.prefixBy(VERSION.WIF), utils.bufferify)
-
-  var suffixChecksum = R.compose(utils.suffixBy, utils.slice(0, 4), crypto.dsha256, fixify)(payload)
-
-  var wif = R.compose(base58.encode, suffixChecksum, fixify)
-
-  return wif(payload)
+var wifPayload = (isCompressed) => (privateKey) => {
+  var payload = isCompressed
+    ? R.compose(utils.suffixBy([0x01]), utils.prefixBy(VERSION.WIF), utils.bufferify)(privateKey)
+    : R.compose(utils.prefixBy(VERSION.WIF), utils.bufferify)(privateKey)
+  var wif = crypto.base58Check(payload)
+  return wif
 }
 
 /* Returns WIF and public key
- @param {Hex} privateKey - The private key
+ * @param {Hex} privateKey - The private key
  */
 var ecpair = (privateKey) => {
   var wif = wifPayload(false)

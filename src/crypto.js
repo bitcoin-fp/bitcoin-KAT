@@ -1,6 +1,8 @@
 var crypto = require('crypto')
 var Ripemd160 = require('ripemd160')
+var base58 = require('bs58')
 var compose = require('ramda').compose
+var utils = require('./utils')
 
 /* Returns SHA256 hash
  * @param {Buffer} data - The input to be hashed
@@ -33,10 +35,20 @@ var dhash = compose(ripemd160, sha256)
  */
 var pbkdf2 = (data, salt) => crypto.pbkdf2Sync(data, salt, 2048, 64, 'sha512')
 
+/* base58 checksum
+ * @param {Buffer} data - The input
+ * $returns {Hex} - The base58 checksum
+ */
+var base58Check = (data) => {
+  var suffixChecksum = compose(utils.suffixBy, utils.slice(0, 4), dsha256)(data)
+  return compose(base58.encode, suffixChecksum)(data)
+}
+
 module.exports = {
   sha256: sha256,
   dsha256: dsha256,
   ripemd160: ripemd160,
   dhash: dhash,
-  pbkdf2: pbkdf2
+  pbkdf2: pbkdf2,
+  base58Check: base58Check
 }
