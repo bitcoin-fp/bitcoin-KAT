@@ -13,16 +13,15 @@ var compress = (isCompressed) => (ecpoints) => ecpoints.getEncoded(isCompressed)
 var publicKey = (isCompressed) => R.compose(R.toUpper, compress(isCompressed), ecpoints, utils.bigify)
 
 var wifPayload = (isCompressed) => (payload) => {
-  var bPayload = Buffer.from(payload, 'hex')
-  var fPrefix = utils.prefixBy(VERSION.WIF)
-  var fSuffix = utils.suffixBy([0x01])
+  var fixify = isCompressed
+    ? R.compose(utils.suffixBy([0x01]), utils.prefixBy(VERSION.WIF), utils.bufferify)
+    : R.compose(utils.prefixBy(VERSION.WIF), utils.bufferify)
 
-  bPayload = fPrefix(bPayload)
-  if (isCompressed) bPayload = fSuffix(bPayload)
+  var suffixChecksum = R.compose(utils.suffixBy, utils.slice(0, 4), crypto.dsha256, fixify)(payload)
 
-  var wif = R.compose(base58.encode, utils.suffixTo(bPayload), utils.slice(0, 4), crypto.dsha256)
+  var wif = R.compose(base58.encode, suffixChecksum, fixify)
 
-  return wif(bPayload)
+  return wif(payload)
 }
 
 var ecpair = (privateKey) => {
