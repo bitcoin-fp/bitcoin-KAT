@@ -49,7 +49,7 @@ var base58Check = (data) => {
  * @param {String} salt - The salt
  * @returns {Buffer} - HMAC SHA512 crypto of data, length 512 bits
  */
-var hmac512 = (data, salt) => crypto.createHmac('sha512', salt).update(data).digest()
+var hmac512 = (salt) => (data) => crypto.createHmac('sha512', salt).update(data).digest()
 
 module.exports = {
   sha256: sha256,
