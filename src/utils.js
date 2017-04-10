@@ -43,6 +43,8 @@ var bigify = (payload) => bigi.fromBuffer(Buffer.from(payload, 'hex'))
 
 var bufferify = (payload) => Buffer.from(payload, 'hex')
 
+var bufferifyString = (payload) => Buffer.from(payload)
+
 module.exports = {
   bytesToBits: bytesToBits,
   prefixBy: prefixBy,
@@ -51,5 +53,6 @@ module.exports = {
   suffixTo: suffixTo,
   slice: slice,
   bigify: bigify,
-  bufferify: bufferify
+  bufferify: bufferify,
+  bufferifyString: bufferifyString
 }
