@@ -11,7 +11,7 @@ describe('Address', function () {
     assert.strictEqual(mainAddress(publicKey), '1PRTTaJesdNovgne6Ehcdu1fpEdX7913CK')
   })
 
-  it('should be valid bitcoin address on main network', function () {
+  it('should be valid bitcoin address on test network', function () {
     var publicKey = '024289801366bcee6172b771cf5a7f13aaecd237a0b9a1ff9d769cabc2e6b70a34'
     var testAddress = address(NETWORK.TESTNET)
     assert.strictEqual(testAddress(publicKey), 'n1TteZiR3NiYojqKAV8fNxtTwsrjM7kVdj')
