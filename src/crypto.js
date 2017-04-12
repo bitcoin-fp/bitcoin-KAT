@@ -35,7 +35,7 @@ var dhash = compose(ripemd160, sha256)
  */
 var pbkdf2 = (data, salt) => crypto.pbkdf2Sync(data, salt, 2048, 64, 'sha512')
 
-/* base58 checksum
+/* base58 checksum encoder
  * @param {Buffer} data - The input
  * $returns {Hex} - The base58 checksum
  */
@@ -43,6 +43,12 @@ var base58Check = (data) => {
   var suffixChecksum = compose(utils.suffixBy, utils.slice(0, 4), dsha256)(data)
   return compose(base58.encode, suffixChecksum)(data)
 }
+
+/* base58 checksum decoder
+ * @param {String} data - The input
+ * $returns {Buffer} - The payload
+ */
+var dBase58Check = compose(utils.slice(1, -4), base58.decode)
 
 /* HMAC SHA512
  * @param {String} data - The input
@@ -58,5 +64,6 @@ module.exports = {
   dhash: dhash,
   pbkdf2: pbkdf2,
   base58Check: base58Check,
+  dBase58Check: dBase58Check,
   hmac512: hmac512
 }
