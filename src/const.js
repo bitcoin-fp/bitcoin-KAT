@@ -1,11 +1,15 @@
 module.exports = {
   'VERSION': {
-    'ADDRESS': [0x00],
+    'ADDRESS_MAINNET': [0x00],
+    'ADDRESS_TESTNET': [0x6F],
     'P2SH_ADDRESS': [0x05],
-    'TESTNET_ADDRESS': [0x6F],
     'WIF': [0x80],
     'EXTENDED_PUBLIC_KEY': [0x04, 0x88, 0xB2, 0x1E],
     'EXTENDED_PRIVATE_KEY': [0x04, 0x88, 0xAD, 0xE4]
+  },
+  'NETWORK': {
+    'MAINNET': [0x00],
+    'TESTNET': [0x6F]
   },
   'SIGHASH': {
     'ALL': 0x01,

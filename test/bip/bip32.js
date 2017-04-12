@@ -3,6 +3,7 @@
 var assert = require('assert')
 var Bip32 = require('../../src/bip/bip32')
 var address = require('../../src/address').address
+var NETWORK = require('../../src/const').NETWORK
 
 describe('BIP32', function () {
   var seed = '000102030405060708090a0b0c0d0e0f'
@@ -20,6 +21,6 @@ describe('BIP32', function () {
   })
 
   it('should be valid address', function () {
-    assert.strictEqual(address(mk.publicKey), '15mKKb2eos1hWa6tisdPwwDC1a5J1y9nma')
+    assert.strictEqual(address(NETWORK.MAINNET)(mk.publicKey), '15mKKb2eos1hWa6tisdPwwDC1a5J1y9nma')
   })
 })
