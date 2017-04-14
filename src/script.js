@@ -3,6 +3,9 @@ var utils = require('./utils')
 var R = require('ramda')
 var OPS = require('bitcoin-ops')
 
+/* Returns ScriptPubKey
+ * @param {String} adr - The bitcoin address
+ */
 var scriptPubKey = (adr) => {
   var pkh = R.compose(utils.bufferify, address.getPKH)(adr)
   var script = Buffer.alloc(5 + pkh.length)

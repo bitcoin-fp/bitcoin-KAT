@@ -6,6 +6,9 @@ var wif = require('../ecpair').compressedWIF
 var pk = require('../ecpair').compressedPublicKey
 var hmac512 = R.compose(crypto.hmac512, utils.bufferifyString)('Bitcoin seed')
 
+/* Returns master key of HD wallet
+ * @param {String} seed - The seed
+ */
 var masterKeys = (seed) => {
   var I = R.compose(hmac512, utils.bufferify)(seed)
   var IL = I.slice(0, 32)
