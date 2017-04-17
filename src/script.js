@@ -24,6 +24,13 @@ var scriptPubKey = (adr) => {
   return script
 }
 
+/* Returns ScriptSig
+ */
+var scriptSig = () => {
+
+}
+
 module.exports = {
-  scriptPubKey: scriptPubKey
+  scriptPubKey: scriptPubKey,
+  scriptSig: scriptSig
 }
