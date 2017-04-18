@@ -26,7 +26,7 @@ var scriptPubKey = (adr) => {
 
 /* Returns ScriptSig
  */
-var scriptSig = () => {
+var scriptSig = (privateKey) => (rawTx) => {
 
 }
 
