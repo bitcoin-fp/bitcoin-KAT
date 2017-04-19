@@ -32,9 +32,17 @@ var wif = (isCompressed) => {
     : R.compose(crypto.base58Check, utils.prefixBy(VERSION.WIF), utils.bufferify)
 }
 
+var wifToPrivateKey = (isCompressed) => {
+  return isCompressed
+    ? R.compose(utils.slice(0, -1), crypto.dBase58Check)
+    : R.compose(crypto.dBase58Check)
+}
+
 module.exports = {
   wif: wif(false),
   compressedWIF: wif(true),
   compressedPublicKey: publicKey(true),
-  uncompressedPublicKey: publicKey(false)
+  uncompressedPublicKey: publicKey(false),
+  wifToPrivateKey: wifToPrivateKey(false),
+  compressedWIFToPrivateKey: wifToPrivateKey(true)
 }

@@ -21,8 +21,18 @@ describe('Keys', function () {
     assert.strictEqual(wif, '5J3mBbAH58CpQ3Y5RNJpUKPE62SQ5tfcvU2JpbnkeyhfsYB1Jcn')
   })
 
+  it('should be valid private key from WIF', function () {
+    var pri = ecpair.wifToPrivateKey('5J3mBbAH58CpQ3Y5RNJpUKPE62SQ5tfcvU2JpbnkeyhfsYB1Jcn').toString('hex').toUpperCase()
+    assert.strictEqual(pri, '1E99423A4ED27608A15A2616A2B0E9E52CED330AC530EDCC32C8FFC6A526AEDD')
+  })
+
   it('should be valid compressed WIF private key', function () {
     var wif = ecpair.compressedWIF(privateKey)
     assert.strictEqual(wif, 'KxFC1jmwwCoACiCAWZ3eXa96mBM6tb3TYzGmf6YwgdGWZgawvrtJ')
+  })
+
+  it('should be valid private key from compressed WIF', function () {
+    var pri = ecpair.compressedWIFToPrivateKey('KxFC1jmwwCoACiCAWZ3eXa96mBM6tb3TYzGmf6YwgdGWZgawvrtJ').toString('hex').toUpperCase()
+    assert.strictEqual(pri, '1E99423A4ED27608A15A2616A2B0E9E52CED330AC530EDCC32C8FFC6A526AEDD')
   })
 })
