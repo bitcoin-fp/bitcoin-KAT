@@ -45,6 +45,26 @@ var bufferify = (payload) => Buffer.from(payload, 'hex')
 
 var bufferifyString = (payload) => Buffer.from(payload)
 
+var reverseHex = (hex) => hex.match(/.{2}/g).reverse().join('')
+
+var intToHex = (integer) => {
+  var hex = (integer).toString(16)
+  hex = hex.length % 2 === 0 ? '0x' + hex : '0x0' + hex
+  return hex
+}
+
+var writeUIntBE = (length) => (integer) => {
+  var b = Buffer.alloc(length, 0)
+  b.writeUIntBE(Buffer.from(intToHex(integer)), 0, length)
+  return b
+}
+
+var writeUIntLE = (length) => (integer) => {
+  var b = Buffer.alloc(length, 0)
+  b.writeUIntLE(Buffer.from(intToHex(integer)), 0, length)
+  return b
+}
+
 module.exports = {
   bytesToBits: bytesToBits,
   prefixBy: prefixBy,
@@ -54,5 +74,8 @@ module.exports = {
   slice: slice,
   bigify: bigify,
   bufferify: bufferify,
-  bufferifyString: bufferifyString
+  bufferifyString: bufferifyString,
+  reverseHex: reverseHex,
+  writeUIntBE: writeUIntBE,
+  writeUIntLE: writeUIntLE
 }
