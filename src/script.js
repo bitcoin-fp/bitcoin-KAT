@@ -1,7 +1,9 @@
 var address = require('./address')
 var utils = require('./utils')
+var crypto = require('./crypto')
 var R = require('ramda')
 var OPS = require('bitcoin-ops')
+var ecdsa = require('ecdsa')
 
 /* Returns ScriptPubKey
  * @param {String} adr - The bitcoin address
@@ -27,7 +29,7 @@ var scriptPubKey = (adr) => {
 /* Returns ScriptSig
  */
 var scriptSig = (privateKey) => (rawTx) => {
-
+  return ecdsa.sign(crypto.dsha256(rawTx), privateKey)
 }
 
 module.exports = {

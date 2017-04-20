@@ -11,8 +11,8 @@ module.exports = {
     'MAINNET': [0x00],
     'TESTNET': [0x6F]
   },
-  'SIGHASH': {
-    'ALL': 0x01,
+  'SIGHASHTYPE': {
+    'ALL': [0x01, 0x00, 0x00, 0x00],
     'NONE': 0x02,
     'SINGLE': 0x03,
     'ALL|ANYONECANPAY': 0x81,
