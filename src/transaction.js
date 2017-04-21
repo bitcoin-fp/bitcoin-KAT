@@ -54,14 +54,21 @@ var addOutputs = (outputs) => {
  * @return {Buffer} - Raw transatction data
  */
 var makeRawTx = (payload) => {
+  var collectedInputs = payload.map(function (p) {
+    return {from: p.from, prevHash: p.prevHash, prevIndex: p.prevIndex}
+  })
+  var collectedOutputs = payload.map(function (p) {
+    return {to: p.to, value: p.value}
+  })
+
   var version = utils.suffixBy(TRANSACTION.VERSION)
-  var inCounter = R.compose(utils.suffixBy, Varint.encode)(1)
-  var outCounter = R.compose(utils.suffixBy, Varint.encode)(1)
+  var inCounter = R.compose(utils.suffixBy, Varint.encode)(collectedInputs.length)
+  var outCounter = R.compose(utils.suffixBy, Varint.encode)(collectedOutputs.length)
   var lockTime = utils.suffixBy(TRANSACTION.LOCK_TIME)
   var sigHashType = utils.suffixBy(SIGHASHTYPE.ALL)
 
-  var inputs = addInputs([{from: payload.from, prevHash: payload.prevHash, prevIndex: payload.prevIndex}])
-  var outputs = addOutputs([{to: payload.to, value: payload.value}])
+  var inputs = addInputs(collectedInputs)
+  var outputs = addOutputs(collectedOutputs)
 
   return R.compose(sigHashType, lockTime, outputs, outCounter, inputs, inCounter, version)(Buffer.alloc(0))
 }
