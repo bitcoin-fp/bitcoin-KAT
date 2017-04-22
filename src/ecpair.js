@@ -32,6 +32,10 @@ var wif = (isCompressed) => {
     : R.compose(crypto.base58Check, utils.prefixBy(VERSION.WIF), utils.bufferify)
 }
 
+/* Returns EC private key from compressed or uncompressed WIF
+ * @param {boolean} isCompressed - Compressed or uncompressed
+ * @param {Hex} wif - The WIF
+ */
 var wifToPrivateKey = (isCompressed) => {
   return isCompressed
     ? R.compose(utils.slice(0, -1), crypto.dBase58Check)
