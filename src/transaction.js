@@ -1,4 +1,5 @@
 var script = require('./script')
+var ecpair = require('./ecpair')
 var utils = require('./utils')
 var TRANSACTION = require('./const').TRANSACTION
 var SIGHASHTYPE = require('./const').SIGHASHTYPE
@@ -9,7 +10,7 @@ var Varint = require('varint')
  * @param {Array} inputs - The inputs, i.e. UTXO
  * e.g.
  * [{
- *   from: "133txdxQmwECTmXqAr9RWNHnzQ175jGb7e",
+ *   script: "76a914751e76e8199196d454941c45d1b3a323f1433bd688ac",
  *   prevHash: "c39e394d41e6be2ea58c2d3a78b8c644db34aeff865215c633fe6937933078a9",
  *   prevIndex: 0
  * }]
@@ -18,11 +19,10 @@ var addInputs = (inputs) => {
   var addinps = inputs.reduce(function (f, inp) {
     var prevHash = R.compose(utils.suffixBy, utils.bufferify, utils.reverseHex)(inp.prevHash)
     var prevIndex = R.compose(utils.suffixBy, utils.writeUIntBE(4))(inp.prevIndex)
-    var spk = script.scriptPubKey(inp.from)
-    var scriptPK = utils.suffixBy(spk)
-    var scriptLength = R.compose(utils.suffixBy, Varint.encode)(spk.length)
+    var script = utils.suffixBy(inp.script)
+    var scriptLength = R.compose(utils.suffixBy, Varint.encode)(inp.script.length)
     var sequence = utils.suffixBy(TRANSACTION.SEQUENCE)
-    return R.compose(sequence, scriptPK, scriptLength, prevIndex, prevHash, f)
+    return R.compose(sequence, script, scriptLength, prevIndex, prevHash, f)
   }, (init) => init)
 
   return addinps
@@ -32,17 +32,16 @@ var addInputs = (inputs) => {
  * @param {Array} outputs - The outputs
  * e.g.
  * [{
- *   to: "1KKKK6N21XKo48zWKuQKXdvSsCf95ibHFa",
+ *   script: "76a914751e76e8199196d454941c45d1b3a323f1433bd688ac",
  *   value: 1.8
  * }]
  */
 var addOutputs = (outputs) => {
   var addouts = outputs.reduce(function (f, out) {
     var spend = R.compose(utils.suffixBy, utils.writeUIntLE(8))(out.value * 100000000)
-    var spk = script.scriptPubKey(out.to)
-    var scriptPK = utils.suffixBy(spk)
-    var scriptLength = R.compose(utils.suffixBy, Varint.encode)(spk.length)
-    return R.compose(scriptPK, scriptLength, spend, f)
+    var script = utils.suffixBy(out.script)
+    var scriptLength = R.compose(utils.suffixBy, Varint.encode)(out.script.length)
+    return R.compose(script, scriptLength, spend, f)
   }, (init) => init)
 
   return addouts
@@ -55,10 +54,33 @@ var addOutputs = (outputs) => {
  */
 var makeRawTx = (payload) => {
   var collectedInputs = payload.map(function (p) {
-    return {from: p.from, prevHash: p.prevHash, prevIndex: p.prevIndex}
+    return {script: script.scriptPubKey(p.from), prevHash: p.prevHash, prevIndex: p.prevIndex}
   })
   var collectedOutputs = payload.map(function (p) {
-    return {to: p.to, value: p.value}
+    return {script: script.scriptPubKey(p.to), value: p.value}
+  })
+
+  var version = utils.suffixBy(TRANSACTION.VERSION)
+  var inCounter = R.compose(utils.suffixBy, Varint.encode)(collectedInputs.length)
+  var outCounter = R.compose(utils.suffixBy, Varint.encode)(collectedOutputs.length)
+  var lockTime = utils.suffixBy(TRANSACTION.LOCK_TIME)
+  var sigHashType = utils.suffixBy(SIGHASHTYPE.ALL)
+
+  var inputs = addInputs(collectedInputs)
+  var outputs = addOutputs(collectedOutputs)
+
+  return R.compose(sigHashType, lockTime, outputs, outCounter, inputs, inCounter, version)(Buffer.alloc(0))
+}
+
+var makeSignedTx = (wif, payload) => {
+  var scriptSig = R.compose(script.scriptSig, ecpair.wifToPrivateKey(true))(wif)
+  var scriptPubKey = script.scriptPubKey
+
+  var collectedInputs = payload.map(function (p) {
+    return {script: scriptSig(makeRawTx(payload)), prevHash: p.prevHash, prevIndex: p.prevIndex}
+  })
+  var collectedOutputs = payload.map(function (p) {
+    return {script: scriptPubKey(p.to), value: p.value}
   })
 
   var version = utils.suffixBy(TRANSACTION.VERSION)
@@ -74,5 +96,6 @@ var makeRawTx = (payload) => {
 }
 
 module.exports = {
-  makeRawTx: makeRawTx
+  makeRawTx: makeRawTx,
+  makeSignedTx: makeSignedTx
 }
