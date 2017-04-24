@@ -1,6 +1,7 @@
 var address = require('./address')
 var utils = require('./utils')
 var crypto = require('./crypto')
+var ecpair = require('./ecpair')
 var R = require('ramda')
 var OPS = require('bitcoin-ops')
 var ecdsa = require('ecdsa')
@@ -29,7 +30,10 @@ var scriptPubKey = (adr) => {
 /* Returns ScriptSig
  */
 var scriptSig = (privateKey) => (rawTx) => {
-  return ecdsa.sign(crypto.dsha256(rawTx), privateKey)
+  var signature = ecdsa.sign(crypto.dsha256(rawTx), utils.bigify(privateKey)).toDER()
+  var publicKey = R.compose(utils.bufferify, ecpair.uncompressedPublicKey)(privateKey)
+  var script = R.compose(utils.suffixBy(publicKey), utils.suffixBy([0x41]), utils.suffixBy([0x01]), utils.prefixBy([0x48]))(signature)
+  return script
 }
 
 module.exports = {
