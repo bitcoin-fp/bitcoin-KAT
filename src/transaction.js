@@ -18,9 +18,9 @@ var Varint = require('varint')
 var addInputs = (inputs) => {
   var addinps = inputs.reduce(function (f, inp) {
     var prevHash = R.compose(utils.suffixBy, utils.bufferify, utils.reverseHex)(inp.prevHash)
-    var prevIndex = R.compose(utils.suffixBy, utils.writeUIntBE(4))(inp.prevIndex)
+    var prevIndex = R.compose(utils.suffixBy, utils.writeUIntLE(4))(inp.prevIndex)
     var script = utils.suffixBy(inp.script)
-    var scriptLength = R.compose(utils.suffixBy, Varint.encode)(inp.script.length)
+    var scriptLength = R.compose(utils.suffixBy, utils.writeUIntLE(1))(inp.script.length)
     var sequence = utils.suffixBy(TRANSACTION.SEQUENCE)
     return R.compose(sequence, script, scriptLength, prevIndex, prevHash, f)
   }, (init) => init)
@@ -40,7 +40,7 @@ var addOutputs = (outputs) => {
   var addouts = outputs.reduce(function (f, out) {
     var spend = R.compose(utils.suffixBy, utils.writeUIntLE(8))(out.value * 100000000)
     var script = utils.suffixBy(out.script)
-    var scriptLength = R.compose(utils.suffixBy, Varint.encode)(out.script.length)
+    var scriptLength = R.compose(utils.suffixBy, utils.writeUIntLE(1))(out.script.length)
     return R.compose(script, scriptLength, spend, f)
   }, (init) => init)
 
@@ -72,8 +72,14 @@ var makeRawTx = (payload) => {
   return R.compose(sigHashType, lockTime, outputs, outCounter, inputs, inCounter, version)(Buffer.alloc(0))
 }
 
+/* Create a signed transaction
+ * @param {Hex} wif - The private key in WIF format
+ * @param {Object} payload - Contain sender/recipient's address, sent value and fee (in BTC, 1 satoshi = 0.00000001 BTC)
+ * e.g. {from: "133txdxQmwECTmXqAr9RWNHnzQ175jGb7e", to: "1KKKK6N21XKo48zWKuQKXdvSsCf95ibHFa", value: 1.8, fee: 0.1}
+ * @return {Buffer} - Signed transatction data
+ */
 var makeSignedTx = (wif, payload) => {
-  var scriptSig = R.compose(script.scriptSig, ecpair.wifToPrivateKey(true))(wif)
+  var scriptSig = R.compose(script.scriptSig, ecpair.wifToPrivateKey)(wif)
   var scriptPubKey = script.scriptPubKey
 
   var collectedInputs = payload.map(function (p) {
@@ -87,12 +93,11 @@ var makeSignedTx = (wif, payload) => {
   var inCounter = R.compose(utils.suffixBy, Varint.encode)(collectedInputs.length)
   var outCounter = R.compose(utils.suffixBy, Varint.encode)(collectedOutputs.length)
   var lockTime = utils.suffixBy(TRANSACTION.LOCK_TIME)
-  var sigHashType = utils.suffixBy(SIGHASHTYPE.ALL)
 
   var inputs = addInputs(collectedInputs)
   var outputs = addOutputs(collectedOutputs)
 
-  return R.compose(sigHashType, lockTime, outputs, outCounter, inputs, inCounter, version)(Buffer.alloc(0))
+  return R.compose(lockTime, outputs, outCounter, inputs, inCounter, version)(Buffer.alloc(0))
 }
 
 module.exports = {
