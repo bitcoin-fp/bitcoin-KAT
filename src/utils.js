@@ -1,3 +1,5 @@
+/* bunch of helper functions*/
+
 var bigi = require('bigi')
 
 var bytesToBits = function (bytes) {
