@@ -25,8 +25,8 @@ describe('Address', function () {
     assert.strictEqual(testAddress(publicKey), 'n1TteZiR3NiYojqKAV8fNxtTwsrjM7kVdj')
 
     var publicKeyHash = '751e76e8199196d454941c45d1b3a323f1433bd6'
-    var mainAddressPKH = addressPKH(NETWORK.TESTNET)
-    assert.strictEqual(mainAddressPKH(publicKeyHash), 'mrCDrCybB6J1vRfbwM5hemdJz73FwDBC8r')
+    var testAddressPKH = addressPKH(NETWORK.TESTNET)
+    assert.strictEqual(testAddressPKH(publicKeyHash), 'mrCDrCybB6J1vRfbwM5hemdJz73FwDBC8r')
 
     assert.strictEqual(getPKH('mrCDrCybB6J1vRfbwM5hemdJz73FwDBC8r'), publicKeyHash)
   })
