@@ -36,10 +36,10 @@ var wif = (isCompressed) => {
  * @param {boolean} isCompressed - Compressed or uncompressed
  * @param {Hex} wif - The WIF
  */
-var wifToPrivateKey = (isCompressed) => {
-  return isCompressed
-    ? R.compose(utils.slice(0, -1), crypto.dBase58Check)
-    : R.compose(crypto.dBase58Check)
+var wifToPrivateKey = (wif) => {
+  return wif.startsWith('5') || wif.startsWith('9')
+    ? R.compose(crypto.dBase58Check)(wif)
+    : R.compose(utils.slice(0, -1), crypto.dBase58Check)(wif)
 }
 
 module.exports = {
@@ -47,6 +47,5 @@ module.exports = {
   compressedWIF: wif(true),
   compressedPublicKey: publicKey(true),
   uncompressedPublicKey: publicKey(false),
-  wifToPrivateKey: wifToPrivateKey(false),
-  compressedWIFToPrivateKey: wifToPrivateKey(true)
+  wifToPrivateKey: wifToPrivateKey
 }
