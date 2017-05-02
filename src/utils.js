@@ -1,4 +1,4 @@
-/* bunch of helper functions*/
+/* bunch of helper functions */
 
 var bigi = require('bigi')
 
