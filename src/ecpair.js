@@ -23,17 +23,17 @@ var compress = (isCompressed) => (ecpoints) => ecpoints.getEncoded(isCompressed)
 var publicKey = (isCompressed) => R.compose(R.toUpper, compress(isCompressed), ecpoints, utils.bigify)
 
 /* Returns compressed or uncompressed WIF
+ * @param [network] network - Main or Test network
  * @param {boolean} isCompressed - Compressed or uncompressed
  * @param {Hex} privateKey - The EC private key
  */
-var wif = (isCompressed) => {
+var wif = (network) => (isCompressed) => {
   return isCompressed
-    ? R.compose(crypto.base58Check, utils.prefixBy(VERSION.WIF), utils.suffixBy([0x01]), utils.bufferify)
-    : R.compose(crypto.base58Check, utils.prefixBy(VERSION.WIF), utils.bufferify)
+    ? R.compose(crypto.base58Check, utils.prefixBy(network), utils.suffixBy([0x01]), utils.bufferify)
+    : R.compose(crypto.base58Check, utils.prefixBy(network), utils.bufferify)
 }
 
 /* Returns EC private key from compressed or uncompressed WIF
- * @param {boolean} isCompressed - Compressed or uncompressed
  * @param {Hex} wif - The WIF
  */
 var wifToPrivateKey = (wif) => {
@@ -43,8 +43,10 @@ var wifToPrivateKey = (wif) => {
 }
 
 module.exports = {
-  wif: wif(false),
-  compressedWIF: wif(true),
+  wif: wif(VERSION.WIF_MAINNET)(false),
+  compressedWIF: wif(VERSION.WIF_MAINNET)(true),
+  wifTestnet: wif(VERSION.WIF_TESTNET)(false),
+  compressedWIFTestnet: wif(VERSION.WIF_TESTNET)(true),
   compressedPublicKey: publicKey(true),
   uncompressedPublicKey: publicKey(false),
   wifToPrivateKey: wifToPrivateKey

@@ -40,4 +40,16 @@ describe('Keys', function () {
     var pri = ecpair.wifToPrivateKey('KxFC1jmwwCoACiCAWZ3eXa96mBM6tb3TYzGmf6YwgdGWZgawvrtJ').toString('hex').toUpperCase()
     assert.strictEqual(pri, '1E99423A4ED27608A15A2616A2B0E9E52CED330AC530EDCC32C8FFC6A526AEDD')
   })
+
+  var privateKeyTestnet = '18DBC4E4D0679B11EAEE9A7C68498BBB58CF5B97178DB4A7ADBED71E4831B6FA'
+
+  it('should be valid WIF private key(TestNet)', function () {
+    var wif = ecpair.wifTestnet(privateKeyTestnet)
+    assert.strictEqual(wif, '91ms93ej64a3mt6NNZdq38XvBpfNHVFxcVtJYKee9uu99WCtQYq')
+  })
+
+  it('should be valid compressed WIF private key(TestNet)', function () {
+    var wif = ecpair.compressedWIFTestnet(privateKeyTestnet)
+    assert.strictEqual(wif, 'cNR2JWhWmLksF6WhLB3Z2QFTkmNLwmj2TgVSRFK8zLV8xKAmUUtN')
+  })
 })

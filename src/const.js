@@ -3,7 +3,8 @@ module.exports = {
     'ADDRESS_MAINNET': [0x00],
     'ADDRESS_TESTNET': [0x6F],
     'P2SH_ADDRESS': [0x05],
-    'WIF': [0x80],
+    'WIF_MAINNET': [0x80],
+    'WIF_TESTNET': [0xef],
     'EXTENDED_PUBLIC_KEY': [0x04, 0x88, 0xB2, 0x1E],
     'EXTENDED_PRIVATE_KEY': [0x04, 0x88, 0xAD, 0xE4]
   },
