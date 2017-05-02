@@ -1,6 +1,11 @@
 /* bunch of helper functions */
 
 var bigi = require('bigi')
+var crypto = require('crypto')
+
+var ecurve = require('ecurve')
+var ecurveSecp256k1 = ecurve.getCurveByName('secp256k1')
+var maxBound = ecurveSecp256k1.n
 
 var bytesToBits = function (bytes) {
   var bits = Array.prototype.slice.call(bytes).map(function (byte) {
@@ -67,6 +72,16 @@ var writeUIntLE = (length) => (integer) => {
   return b
 }
 
+var getRandom = () => {
+  var random
+  var bigRandom
+  do {
+    random = crypto.randomBytes(32)
+    bigRandom = bigi.fromBuffer(random)
+  } while (bigRandom.signum <= 0 || bigRandom.compareTo(maxBound) >= 0)
+  return random.toString('hex')
+}
+
 module.exports = {
   bytesToBits: bytesToBits,
   prefixBy: prefixBy,
@@ -79,5 +94,6 @@ module.exports = {
   bufferifyString: bufferifyString,
   reverseHex: reverseHex,
   writeUIntBE: writeUIntBE,
-  writeUIntLE: writeUIntLE
+  writeUIntLE: writeUIntLE,
+  getRandom: getRandom
 }
