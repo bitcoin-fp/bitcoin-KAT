@@ -1,5 +1,6 @@
 var crypto = require('./crypto')
 var utils = require('./utils')
+var VERSION = require('./const').VERSION
 var R = require('ramda')
 
 /* Returns bitcoin address
@@ -26,7 +27,9 @@ var addressPKH = (network) => {
 var getPKH = (address) => crypto.dBase58Check(address).toString('hex')
 
 module.exports = {
-  address: address,
-  addressPKH: addressPKH,
+  address: address(VERSION.ADDRESS_MAINNET),
+  addressTestnet: address(VERSION.ADDRESS_TESTNET),
+  addressPKH: addressPKH(VERSION.ADDRESS_MAINNET),
+  addressPKHTestnet: addressPKH(VERSION.ADDRESS_TESTNET),
   getPKH: getPKH
 }
