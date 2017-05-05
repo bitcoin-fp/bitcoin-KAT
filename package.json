@@ -1,7 +1,7 @@
 {
-  "name": "bitcoin-fp",
+  "name": "bitcoin-KAT",
   "version": "1.0.0",
-  "description": "Bitcoin and Blockchain implementation of Javascript in functional programming style",
+  "description": "Bitcoin keys, addresses and transactions implement",
   "main": "index.js",
   "scripts": {
     "test": "standard && mocha ./test/*"
