@@ -1,15 +1,52 @@
-# bitcoin-fp
+# bitcoin-KAT
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
-This is an exercise of Bitcoin in Javascript implement with functional programming style. You can use the code to generate public/private keys, address and transaction.
+Using the code to construct **Keys**, **Addresses** and **Transactions**.
 
 ## Install
-## Usage  
-#### Keys  
-#### Address  
-#### Transaction  
+`npm install bitcoin-KAT`
+## Usage
+```javascript
+var bitcoin = require('bitcoin-KAT')
+```
+### Keys
+Generate keys randomly
+```javascript
+bitcoin.keys()
+```
+Generate keys with given private key
+```javascript
+bitcoin.keys(privateKey) //privateKey: private key hex
+```
+Generate keys for `Testnet`
+```javascript
+bitcoin.keys_testnet()
+```
+### Address
+Generate an address
+```javascript
+bitcoin.address(publicKey) //publicKey: public key hex
+```
+Generate an address for `Testnet`
+```javascript
+bitcoin.address_testnet(publicKey)
+```
+### Transaction
+Generate a transaction rawdata, take a look at this [transaction](https://testnet.smartbit.com.au/tx/a027500c44b6e02d2587763b99751374294720e59630eeb3152e09a9fc7d8b04) for example. Currently support `P2PKH` only.
+```javascript
+var payment = [
+  {
+    from: 'n4j1MtzGZpivsqbvrcAqPV4GS74B3kS7qG', //payer's address
+    to: 'mwCwTceJvYV27KXBc3NJZys6CjsgsoeHmf', //payee's address
+    value: 0.64, //payment amount in BTC
+    prevHash: '0e512b5ab9220e473928b0c2728aaa74ec66a1cc827caa29a744eb508d15f850', //the UTXO refers to previous tx's hash
+    prevIndex: 0 //the index of UTXO refers to previous tx's output
+  }
+]
+bitcoin.transaction(privateKey, payment) //privateKey: private key in WIF
+````
 ## Test
-```npm test```
+Run `npm test`
 ## License
 MIT
 ## Reference
