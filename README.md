@@ -1,5 +1,5 @@
 # bitcoin-KAT
-[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+[![](https://img.shields.io/badge/language-javascript-brightgreen.svg)]() [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Using the code to construct **Keys**, **Addresses** and **Transactions**.
 
@@ -47,7 +47,5 @@ bitcoin.transaction(privateKey, payment) //privateKey: private key in WIF
 ````
 ## Test
 Run `npm test`
-## License
-MIT
 ## Reference
 [Mastering Bitcoin, O'Reilly Media](https://github.com/bitcoinbook/bitcoinbook/tree/develop)
